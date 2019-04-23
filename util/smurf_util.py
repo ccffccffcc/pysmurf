@@ -1738,22 +1738,16 @@ class SmurfUtilMixin(SmurfBase):
     def set_tes_bias_high_current(self, bias_group, write_log=False):
         """
         Sets all bias groups to high current mode. Note that the bias group
-        number is not the same as the relay number. It also does not matter,
-        because Joe's code secretly flips all the relays when you flip one. 
+        number is not the same as the relay number. 
 
         Args:
         -----
-        bias_group (int): The bias group(s) to set to high current mode REMOVED 
-          20190101 BECAUSE JOE'S CODE SECRETLY FLIPS ALL OF THEM ANYWAYS -CY
+        bias_group (int): The bias group(s) to set to high current mode
         """
         old_relay = self.get_cryo_card_relays()
         old_relay = self.get_cryo_card_relays()  # querey twice to ensure update
         new_relay = np.copy(old_relay)
         self.log('Old relay {}'.format(bin(old_relay)))
-
-        # bias_group = 0 # just pick the first one arbitrarily
-        #self.log('Flipping bias group 0 relay only; Joe code will secretly' +  
-        #    'flip all of them')
 
         bias_group = np.ravel(np.array(bias_group))
         for bg in bias_group:
@@ -1770,22 +1764,15 @@ class SmurfUtilMixin(SmurfBase):
     def set_tes_bias_low_current(self, bias_group, write_log=False):
         """
         Sets all bias groups to low current mode. Note that the bias group
-        number is not the same as the relay number. It also does not matter, 
-        because Joe's code secretly flips all the relays when you flip one
+        number is not the same as the relay number. 
 
         Args:
         -----
-        bias_group (int): The bias group to set to low current mode REMOVED
-          20190101 BECAUSE JOE'S CODE WILL FLIP ALL BIAS GROUPS WHEN ONE IS 
-          COMMANDED -CY
+        bias_group (int): The bias group to set to low current mode 
         """
         old_relay = self.get_cryo_card_relays()
         old_relay = self.get_cryo_card_relays()  # querey twice to ensure update
         new_relay = np.copy(old_relay)
-
-        # bias_group = 0
-        #self.log('Flipping bias group 0 relay only; PIC code will flip all ' +
-        #    'of them')
 
         bias_group = np.ravel(np.array(bias_group))
         self.log('Old relay {}'.format(bin(old_relay)))
@@ -1841,28 +1828,38 @@ class SmurfUtilMixin(SmurfBase):
     def att_to_band(self, att):
         """
         Gives the band associated with a given attenuator number
+
+        Args:
+        -----
+        att (int) : The attenuator number
+
+        Ret:
+        ----
+        band (int) : The band number
         """
         return self.att_to_band['band'][np.ravel(
             np.where(self.att_to_band['att']==att))[0]]
 
     def band_to_att(self, band):
         """
+        Gives the attenuator number associated with a band number
+
+        Args:
+        -----
+        band (int) : The band number
+
+        Ret:
+        ----
+        att (int) : The attenuator number
+
         """
         # for now, mod 4 ; assumes the band <-> att correspondence is the same
         # for the LB and HB AMCs.
         band=band%4
+
         return self.att_to_band['att'][np.ravel(
             np.where(self.att_to_band['band']==band))[0]]
 
-
-#    def make_gcp_mask_file(self, bands=[2,3], channels_per_band=512):
-#        """
-#        """
-#        chs = np.array([])
-#        for b in bands:
-#            chs = np.append(chs, self.which_on(b)+b*channels_per_band)
-
-#        return chs
 
     def flux_ramp_rate_to_PV(self, val):
         """
@@ -1872,7 +1869,12 @@ class SmurfUtilMixin(SmurfBase):
         Hardcoded somewhere that we can't access; this is just a lookup table
         Allowed reset rates (kHz): 1, 2, 3, 4, 5, 6, 8, 10, 12, 15
 
-        Returns:
+        Args:
+        -----
+        val (int) : The reset rate
+
+        Ret:
+        ----
         rate_sel (int): the rate sel PV for the timing trigger
         """
 
@@ -1884,6 +1886,7 @@ class SmurfUtilMixin(SmurfBase):
         except IndexError:
             self.log("Reset rate not allowed! Look up help for allowed values")
             return
+
 
     def flux_ramp_PV_to_rate(self, val):
         """
