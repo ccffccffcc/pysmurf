@@ -28,6 +28,15 @@ class SmurfBase(object):
     """
 
     def __init__(self, log=None, epics_root=None, offline=False, **kwargs):
+        """
+        Initializer for SmurfControl.
+
+        Args:
+        -----
+        log (logger object) : An object to log to.
+        epics_root (str) : The name of the epics root
+        offline (bool) : Whether to be in an offline mode.
+        """
         # Set up logging
         self.log = log
         if self.log is None:
@@ -99,6 +108,7 @@ class SmurfBase(object):
             self.rtm_spi_cryo_root + 'write')
         self.freq_resp = {}
 
+
     def init_log(self, verbose=0, logger=SmurfLogger, logfile=None,
                  log_timestamp=True, log_prefix=None, **kwargs):
         """
@@ -149,12 +159,14 @@ class SmurfBase(object):
         """
         self.log.set_verbosity(level)
 
+
     def set_logfile(self, logfile=None):
         """
         Change the location where logs are written.  If logfile is None,
         log to STDOUT.
         """
         self.log.set_logfile(logfile)
+
 
     def _band_root(self, band):
         '''
@@ -171,6 +183,7 @@ class SmurfBase(object):
         '''
         return self.band_root.format(int(band))
 
+
     def _cryo_root(self, band):
         '''
         Helper function that returns the epics path to cryoroot.
@@ -185,6 +198,7 @@ class SmurfBase(object):
             the input band.
         '''
         return self.cryo_root.format(int(band))
+
 
     def _channel_root(self, band, channel):
         """

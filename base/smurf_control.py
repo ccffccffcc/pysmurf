@@ -21,11 +21,20 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         setup=False, offline=False, smurf_cmd_mode=False, no_dir=False,
         **kwargs):
         '''
+        Intializer for SmurfControl.
+
         Args:
         -----
         epics_root (string) : The epics root to be used. Default mitch_epics
         cfg_file (string) : Path the config file
         data_dir (string) : Path to the data dir
+        name (str) : The name of the folder to save data to. If None, then the
+            directory is named with the timestamp.
+        make_logfile (bool) : If True, makes a logfile and all outputs are
+            sent there. If False, then outputs are sent to screen.
+        smurf_cmd_mode (bool) Extrnal commanding mode
+        no_dir (bool) : Whether to make an output directory. This will break
+            many things.
         '''
         self.config = SmurfConfig(cfg_file)
         if epics_root is None:
@@ -45,6 +54,22 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         '''
         Initizializes SMuRF with desired parameters set in experiment.cfg.
         Largely stolen from a Cyndia/Shawns SmurfTune script
+
+        Args:
+        -----
+        cfg_file (string) : Path the config file
+
+        Opt Args:
+        ---------
+        data_dir (string) : Path to the data dir
+        name (str) : The name of the folder to save data to. If None, then the
+            directory is named with the timestamp.
+        make_logfile (bool) : If True, makes a logfile and all outputs are
+            sent there. If False, then outputs are sent to screen.
+        smurf_cmd_mode (bool) Extrnal commanding mode
+        no_dir (bool) : Whether to make an output directory. This will break
+            many things.
+        setup (bool) : Whether to run setup. Default False.
         '''
 
         if no_dir:
@@ -251,9 +276,14 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         # initialize outputs cfg
         self.config.update('outputs', {})
 
+
     def setup(self, write_log=True, **kwargs):
         """
         Sets the PVs to the default values from the experiment.cfg file
+
+        Opt Args:
+        ---------
+        write_log (bool) : Whether to write logs.
         """
         self.log('Setting up...', (self.LOG_USER))
 
@@ -379,14 +409,18 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
             self.log('Select external reference for bay %i' % (bay))
             self.sel_ext_ref(bay)
 
-    def make_dir(self, directory):
-        """check if a directory exists; if not, make it
 
-           Args:
-            directory (str): path of directory to create
+    def make_dir(self, directory):
+        """
+        check if a directory exists; if not, make it
+
+        Args:
+        -----
+        directory (str): path of directory to create
         """
         if not os.path.exists(directory):
             os.makedirs(directory)
+
 
     def get_timestamp(self, as_int=False):
         """
@@ -400,6 +434,7 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         else:
             return t
 
+
     def add_output(self, key, val):
         """
         Add a key to the output config.
@@ -410,6 +445,7 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         """
 
         self.config.update_subkey('outputs', key, val)
+
 
     def write_output(self, filename=None):
         """
