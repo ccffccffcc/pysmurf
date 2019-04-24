@@ -350,7 +350,6 @@ class SmurfTuneMixin(SmurfBase):
         self.save_tune()
 
         self.log('Done with serial tuning')
-
         
                         
     def plot_tune_summary(self, band, eta_scan=False, show_plot=False,
@@ -435,11 +434,10 @@ class SmurfTuneMixin(SmurfBase):
                 self.log('Eta plot {} of {}'.format(k+1, n_keys))
                 r = self.freq_resp[band]['resonances'][k]
                 self.plot_eta_fit(r['freq_eta_scan'], r['resp_eta_scan'],
-                                  eta=r['eta'], eta_mag=r['eta_mag'],
-                                  eta_phase_deg=r['eta_phase'],
-                                  band=band, res_num=k,
-                                  timestamp=timestamp, save_plot=save_plot,
-                                  show_plot=show_plot, peak_freq=r['freq'])
+                    eta=r['eta'], eta_mag=r['eta_mag'], 
+                    eta_phase_deg=r['eta_phase'], band=band, res_num=k,
+                    timestamp=timestamp, save_plot=save_plot, 
+                    show_plot=show_plot, peak_freq=r['freq'])
 
 
     def plot_tune_summary(self, band, eta_scan=False, show_plot=False,
@@ -1140,7 +1138,8 @@ class SmurfTuneMixin(SmurfBase):
                     resp[left_plot:right_plot], 
                     eta=eta, eta_mag=eta_mag, r2=r2,
                     save_plot=save_plot, timestamp=timestamp, band=band,
-                    res_num=res_num, sk_fit=sk_fit, f_slow=f_slow, resp_slow=resp_slow)
+                    res_num=res_num, sk_fit=sk_fit, f_slow=f_slow, 
+                    resp_slow=resp_slow)
             else:
                 if res_num in plot_chans:
                     self.log('Making plot for band ' + 
@@ -1536,7 +1535,7 @@ class SmurfTuneMixin(SmurfBase):
         Combs master channel assignment and assigns group number to all 
         channels in ch_list. Does not affect other channels in the master file.
         '''
-        freqs_master, subbands_master,channels_master, groups_master = self.get_master_assignment(band)
+        freqs_master, subbands_master, channels_master, groups_master = self.get_master_assignment(band)
         for i in range(len(ch_list)):
             for j in range(len(channels_master)):
                 if ch_list[i] == channels_master[j]:
@@ -1947,11 +1946,9 @@ class SmurfTuneMixin(SmurfBase):
         # Turn off feedback
         self.set_feedback_enable_array(band, np.zeros_like(old_fb))
         d, df, sync = self.tracking_setup(band,0, reset_rate_khz=reset_rate_khz,
-                                          fraction_full_scale=fraction_full_scale,
-                                          make_plot=False,
-                                          save_plot=False, show_plot=False,
-                                          lms_enable1=False, lms_enable2=False,
-                                          lms_enable3=False, flux_ramp=flux_ramp)
+            fraction_full_scale=fraction_full_scale, make_plot=False, 
+            save_plot=False, show_plot=False, lms_enable1=False, 
+            lms_enable2=False, lms_enable3=False, flux_ramp=flux_ramp)
 
 
         n_samp, n_chan = np.shape(df)
@@ -2046,17 +2043,20 @@ class SmurfTuneMixin(SmurfBase):
         Args:
         -----
         band (int) : The band number
-        channel (int) : The channel to check
 
         Opt Args:
         ---------
+        channel (int) : The channel to plot. 
         reset_rate_khz (float) : The flux ramp frequency
         write_log (bool) : Whether to write output to the log
         make_plot (bool) : Whether to make plots. Default False.
         save_plot (bool) : Whether to save plots. Default True.
         show_plot (bool) : Whether to display the plot. Default True.
+        nsamp (int) : The number of samples to take
         lms_freq_hz (float) : The frequency of the tracking algorithm.
            Default is 4000
+        meas_lms_freq (bool) : Whehter to try solving for the lms_freq
+            algorithmically.
         flux_ramp (bool) : Whether to turn on flux ramp. Default True.
         fraction_full_scale (float) : The flux ramp amplitude, as a
            fraction of the maximum. Default is .4950.
@@ -2067,6 +2067,7 @@ class SmurfTuneMixin(SmurfBase):
         lms_enable3 (bool) : Whether to use the third harmonic for tracking.
            Default True.
         lms_gain (int) : The tracking gain parameters. Default 7.
+        return_data (bool) : If true, returns the raw data.
         """
         if not flux_ramp:
             self.log('WARNING: THIS WILL NOT TURN ON FLUX RAMP!')
@@ -2101,11 +2102,13 @@ class SmurfTuneMixin(SmurfBase):
 
         lms_rst_dly = 31  # disable error term for 31 2.4MHz ticks after reset
 
-        self.log("Using lmsFreqHz = {:.0f} Hz".format(lms_freq_hz), self.LOG_USER)
+        self.log("Using lmsFreqHz = {:.0f} Hz".format(lms_freq_hz), 
+            self.LOG_USER)
         lms_delay2 = 255  # delay DDS counter resets, 307.2MHz ticks
         lms_delay_fine = 0
         iq_stream_enable = 0  # stream IQ data from tracking loop
 
+        # Set LMS values
         self.set_lms_delay(band, lms_delay, write_log=write_log)
         self.set_lms_dly_fine(band, lms_delay_fine, write_log=write_log)
         self.set_lms_gain(band, lms_gain, write_log=write_log)
@@ -2117,6 +2120,7 @@ class SmurfTuneMixin(SmurfBase):
         self.set_lms_delay2(band, lms_delay2, write_log=write_log)
         self.set_iq_stream_enable(band, iq_stream_enable, write_log=write_log)
 
+        # Sets the flux ramp parameters
         self.flux_ramp_setup(reset_rate_khz, fraction_full_scale,
                              write_log=write_log)
 
@@ -2129,7 +2133,8 @@ class SmurfTuneMixin(SmurfBase):
                                            single_channel_readout=0, nsamp=nsamp)
             
             df_std = np.std(df, 0)
-            channels_on = list(set(np.where(df_std > 0)[0]) & set(self.which_on(band)))
+            channels_on = list(set(np.where(df_std > 0)[0]) & 
+                set(self.which_on(band)))
             self.log("Number of channels on = {}".format(len(channels_on)), 
                 self.LOG_USER)
 
@@ -2139,7 +2144,8 @@ class SmurfTuneMixin(SmurfBase):
             timestamp = self.get_timestamp()
 
             fig,ax = plt.subplots(1,3,figsize = (12,5))
-            fig.suptitle('LMS freq = {:.0f} Hz, n_channels = {}'.format(lms_freq_hz,len(channels_on)))
+            fig.suptitle('LMS freq = {:.0f} Hz,'.format(lms_freq_hz) + \
+                ' n_channels = {}'.format(len(channels_on)))
             
             ax[0].hist(df_std[channels_on] * 1e3,bins = 20,edgecolor = 'k')            
             ax[0].set_xlabel('Flux ramp demod error std (kHz)')
@@ -2164,23 +2170,27 @@ class SmurfTuneMixin(SmurfBase):
             if not show_plot:
                 plt.close()
 
+            # Single channel plots
             if channel is not None:
                 channel = np.ravel(np.array(channel))
+
                 self.log("Taking data on single channel number {}".format(channel), 
                          self.LOG_USER)
                 sync_idx = self.make_sync_flag(sync)
-                #n_els = 2500
+
+                # Text bounding box
                 bbox = dict(boxstyle="round", ec='w', fc='w', alpha=.65)
 
                 for ch in channel:
                     fig, ax = plt.subplots(2, sharex=True)
                     ax[0].plot(f[:, ch]*1e3)
                     ax[0].set_ylabel('Tracked Freq [kHz]')
-                    ax[0].text(.025, .9, 'LMS Freq {:.0f} Hz'.format(lms_freq_hz), fontsize=10,
-                        transform=ax[0].transAxes, bbox=bbox)
+                    ax[0].text(.025, .9, 'LMS Freq {:.0f} Hz'.format(lms_freq_hz), 
+                        fontsize=10, transform=ax[0].transAxes, bbox=bbox)
 
-                    ax[0].text(.95, .9, 'Band {} Ch {:03}'.format(band, ch), fontsize=10,
-                        transform=ax[0].transAxes, horizontalalignment='right', bbox=bbox)
+                    ax[0].text(.95, .9, 'Band {} Ch {:03}'.format(band, ch), 
+                        fontsize=10, transform=ax[0].transAxes, 
+                        horizontalalignment='right', bbox=bbox)
 
                     ax[1].plot(df[:, ch]*1e3)
                     ax[1].set_ylabel('Freq Error [kHz]')
@@ -2197,8 +2207,8 @@ class SmurfTuneMixin(SmurfBase):
 
                     if save_plot:
                         plt.savefig(os.path.join(self.plot_dir, timestamp + 
-                                                 '_FRtracking_band{}_ch{:03}.png'.format(band,ch)),
-                                    bbox_inches='tight')
+                            '_FRtracking_band{}_ch{:03}.png'.format(band,ch)),
+                            bbox_inches='tight')
                     if not show_plot:
                         plt.close()
 
@@ -2223,27 +2233,43 @@ class SmurfTuneMixin(SmurfBase):
         ---------
         reset_rate_khz (float); The flux ramp reset rate.
         channel (int or int array): List of channels to plot.
+        reset_rate_khz (float) : The flux ramp frequency
+        make_plot (bool) : Whether to make plots. Default False.
+        save_plot (bool) : Whether to save plots. Default True.
+        show_plot (bool) : Whether to display the plot. Default True.
+        lms_freq_hz (float) : The frequency of the tracking algorithm.
+           Default is 4000
+        flux_ramp (bool) : Whether to turn on flux ramp. Default True.
+        fraction_full_scale (float) : The flux ramp amplitude, as a
+           fraction of the maximum. Default is .4950.
+        lms_enable1 (bool) : Whether to use the first harmonic for tracking.
+           Default True.
+        lms_enable2 (bool) : Whether to use the second harmonic for tracking.
+           Default True.
+        lms_enable3 (bool) : Whether to use the third harmonic for tracking.
+           Default True.
+        lms_gain (int) : The tracking gain parameters. Default 7.
+        f_min (float) : The minimum frequency excursion
+        f_max (float) : The maximum frequency excursion
+        df_max (float) : The maximum frequency error
         """
         self.relock(band)
         
         self.tracking_setup(band, channel=channel, 
-                            reset_rate_khz=reset_rate_khz,
-                            make_plot=make_plot, save_plot=save_plot, 
-                            show_plot=show_plot,
-                            lms_freq_hz=lms_freq_hz, flux_ramp=flux_ramp, 
-                            fraction_full_scale=fraction_full_scale,
-                            lms_enable1=lms_enable1, lms_enable2=lms_enable2, 
-                            lms_enable3=lms_enable3, 
-                            lms_gain=lms_gain, return_data=False)
+            reset_rate_khz=reset_rate_khz, make_plot=make_plot, 
+            save_plot=save_plot, show_plot=show_plot,lms_freq_hz=lms_freq_hz, 
+            flux_ramp=flux_ramp, fraction_full_scale=fraction_full_scale,
+            lms_enable1=lms_enable1, lms_enable2=lms_enable2, 
+            lms_enable3=lms_enable3, lms_gain=lms_gain, return_data=False)
 
         self.check_lock(band, f_min=f_min, f_max=f_max, df_max=df_max,
-                        make_plot=make_plot, flux_ramp=flux_ramp, 
-                        fraction_full_scale=fraction_full_scale,
-                        lms_freq_hz=lms_freq_hz, reset_rate_khz=4.)
+            make_plot=make_plot, flux_ramp=flux_ramp, 
+            fraction_full_scale=fraction_full_scale, lms_freq_hz=lms_freq_hz, 
+            reset_rate_khz=4.)
     
+
     def eta_phase_check(self, band, rot_step_size=30, rot_max=360,
-                        reset_rate_khz=4., 
-                        fraction_full_scale=None,
+                        reset_rate_khz=4., fraction_full_scale=None,
                         flux_ramp=True):
         """
         """
@@ -2267,12 +2293,11 @@ class SmurfTuneMixin(SmurfBase):
                 eta_phase[c] = tools.limit_phase_deg(eta_phase0[c] + r)
             self.set_eta_phase_array(band, eta_phase)
                          
-            d, df, sync = self.tracking_setup(band,0, reset_rate_khz=reset_rate_khz,
-                                          fraction_full_scale=fraction_full_scale,
-                                          make_plot=False,
-                                          save_plot=False, show_plot=False,
-                                          lms_enable1=False, lms_enable2=False,
-                                          lms_enable3=False, flux_ramp=flux_ramp)
+            d, df, sync = self.tracking_setup(band,0, 
+                reset_rate_khz=reset_rate_khz,
+                fraction_full_scale=fraction_full_scale, make_plot=False,
+                save_plot=False, show_plot=False, lms_enable1=False, 
+                lms_enable2=False, lms_enable3=False, flux_ramp=flux_ramp)
             ret['data'][r] = {}
             ret['data'][r]['df'] = df
             ret['data'][r]['sync'] = sync
@@ -2281,6 +2306,7 @@ class SmurfTuneMixin(SmurfBase):
         self.set_eta_phase_array(2, eta_phase0)
 
         return ret
+
 
     def analyze_eta_phase_check(self, dat, channel):
         """
@@ -2351,7 +2377,8 @@ class SmurfTuneMixin(SmurfBase):
                 time.sleep(self._cryo_card_relay_wait)
 
 
-    def set_fixed_flux_ramp_bias(self,fractionFullScale,debug=True, do_config=True):
+    def set_fixed_flux_ramp_bias(self,fractionFullScale,debug=True, 
+        do_config=True):
         """
         ???
 
@@ -2414,17 +2441,28 @@ class SmurfTuneMixin(SmurfBase):
         self.set_flux_ramp_dac(LTC1668RawDacData)        
 
     def flux_ramp_setup(self, reset_rate_khz, fraction_full_scale, df_range=.1, 
-        do_read=False, band=2, write_log=False):
+        band=2, write_log=False):
         """
         Set flux ramp sawtooth rate and amplitude. If there are errors, check 
         that you are using an allowed reset rate! Not all rates are allowed.
 
         Allowed rates: 1, 2, 3, 4, 5, 6, 8, 10, 12, 15 kHz
+
+        Args:
+        -----
+        reset_rate_khz (int) : The flux ramp setup rate in units of kHz.
+        fraction_full_scale (float) : The fraction of the available amplitude
+            of flux ramp. From 0 to 1.
+
+        Opt Args:
+        ---------
+        df_range (float) : The allowable df range
+        band (int) : The band number. Only used for getting the digitizer freq
+        write_log (bool) : whether to write logs.
         """
 
         # Disable flux ramp
         self.flux_ramp_off(write_log=write_log) # no write log?
-        #self.set_cfg_reg_ena_bit(0) # let us switch this to flux ramp on/off
 
         digitizerFrequencyMHz = self.get_digitizer_frequency_mhz(band)
         dspClockFrequencyMHz=digitizerFrequencyMHz/2
@@ -2459,20 +2497,21 @@ class SmurfTuneMixin(SmurfBase):
             self.LOG_USER)
 
         if diffDesiredFractionFullScale > df_range:
-            raise ValueError("Difference from desired fraction of full scale " +
-                "exceeded! {}".format(diffDesiredFractionFullScale) +
-                " vs acceptable {}".format(df_range))
             self.log("Difference from desired fraction of full scale exceeded!" +
                 " P{} vs acceptable {}".format(diffDesiredFractionFullScale, 
                     df_range), 
                 self.LOG_USER)
 
+            raise ValueError("Difference from desired fraction of full scale " +
+                "exceeded! {}".format(diffDesiredFractionFullScale) +
+                " vs acceptable {}".format(df_range))
+
         if rtmClock < 2e6:
-            raise ValueError("RTM clock rate = "+
-                "{} is too low (SPI clock runs at 1MHz)".format(rtmClock*1e-6))
             self.log("RTM clock rate = "+
                 "{} is too low (SPI clock runs at 1MHz)".format(rtmClock * 1e-6), 
                 self.LOG_USER)
+            raise ValueError("RTM clock rate = "+
+                "{} is too low (SPI clock runs at 1MHz)".format(rtmClock*1e-6))
             return
 
 
@@ -2505,13 +2544,13 @@ class SmurfTuneMixin(SmurfBase):
         self.set_ramp_rate(reset_rate_khz, write_log=write_log)
 
 
-
     def get_fraction_full_scale(self):
         """
         Returns the fraction_full_scale
         """
         return 1-2*(self.get_fast_slow_rst_value()/
                     2**self.num_flux_ramp_counter_bits)
+
 
     def check_lock(self, band, f_min=.015, f_max=.2, df_max=.03,
         make_plot=False, flux_ramp=True, fraction_full_scale=None,
@@ -2532,6 +2571,8 @@ class SmurfTuneMixin(SmurfBase):
         flux_ramp (bool) : Whether to flux ramp or not. Default True
         faction_full_scale (float): Number between 0 and 1. The amplitude
            of the flux ramp.
+        lms_freq_hz (float) : The tracking (LMS) frequency. If None, 
+        reset_rate_khz
         """
         self.log('Checking lock on band {}'.format(band))
         
