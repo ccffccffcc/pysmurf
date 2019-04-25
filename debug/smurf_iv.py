@@ -2,6 +2,8 @@ import numpy as np
 from pysmurf.base import SmurfBase
 import time
 import os,sys
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 class SmurfIVMixin(SmurfBase):
 
@@ -393,7 +395,6 @@ class SmurfIVMixin(SmurfBase):
             phase_excursion_list.append(phase_excursion)
 
             if make_plot:
-                import matplotlib.pyplot as plt
                 plt.rcParams["patch.force_edgecolor"] = True
                 
                 if not show_plot:
@@ -468,8 +469,6 @@ class SmurfIVMixin(SmurfBase):
         if len(phase_excursion_list) == 0:
             self.log('phase excursion list length 0')
         elif make_plot:
-            import matplotlib.pyplot as plt
-            from matplotlib.gridspec import GridSpec
             import matplotlib.colors as Colors
             colors = []
             tableau = Colors.TABLEAU_COLORS
@@ -574,7 +573,6 @@ class SmurfIVMixin(SmurfBase):
         i_bias = 1.0E6 * v_bias / r_inline 
 
         if make_plot:
-            import matplotlib.pyplot as plt
             if show_plot:
                 plt.ion()
             else:
@@ -676,7 +674,6 @@ class SmurfIVMixin(SmurfBase):
         si_target = si[i_R_op]
 
         if make_plot:
-            from matplotlib.gridspec import GridSpec
             import matplotlib.colors as Colors
             colors = []
             tableau = Colors.TABLEAU_COLORS
@@ -902,7 +899,6 @@ class SmurfIVMixin(SmurfBase):
             # would work once we had a permanent lookup table of ch to bias group...
 
             if make_plot: # make the timestream plot
-                import matplotlib.pyplot as plt
                 plt.rcParams["patch.force_edgecolor"] = True
 
                 if not show_plot:
@@ -1045,9 +1041,6 @@ class SmurfIVMixin(SmurfBase):
         res_freq (float array) : The frequency of the resonators that
            have TESs.
         """
-        if make_plot:
-            import matplotlib.pyplot as plt
-
         self.flux_ramp_off()
 
         f, d = self.full_band_resp(band)
@@ -1165,7 +1158,6 @@ class SmurfIVMixin(SmurfBase):
         assert ivs_raw_cold['bias group'], \
             'Files must contain IVs from the same bias group'
     
-        import matplotlib.pyplot as plt
         plot_dir = self.plot_dir
 
         dT = t_hot - t_cold

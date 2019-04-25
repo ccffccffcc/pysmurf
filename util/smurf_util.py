@@ -9,9 +9,10 @@ import epics
 from scipy import signal
 import shutil
 import glob
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 class SmurfUtilMixin(SmurfBase):
-
     def take_debug_data(self, band, channel=None, nsamp=2**19, filename=None, 
             IQstream=1, single_channel_readout=1, debug=False):
         """
@@ -2395,7 +2396,6 @@ class SmurfUtilMixin(SmurfBase):
             sib[i] = resp[i] / i_amp
 
             if make_plot and c in plot_channels:
-                import matplotlib.pyplot as plt
                 plt.figure()
                 plt.plot(conv)
 
