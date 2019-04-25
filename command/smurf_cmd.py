@@ -25,8 +25,6 @@ def make_runfile(output_dir, row_len=60, num_rows=60, data_rate=60,
 
     S.log('Making Runfile')
     
-    # 20181119 dB, modified to use the correct format runfile.
-    #with open(os.path.join(os.path.dirname(__file__),"runfile/runfile_template.txt")) as f:
     with open(os.path.join(os.path.dirname(__file__),
         "runfile/runfile.default.bicep53")) as f:
         lines = f.readlines()
@@ -270,7 +268,8 @@ if __name__ == "__main__":
         if args.bias_group == -1:
             if args.bias_voltage_array is not None:
                 bias_voltage_str = args.bias_voltage_array
-                bias_voltage_array = [float(bias) for bias in bias_voltage_str.split(" ")]
+                bias_voltage_array = [float(bias) for bias in \
+                    bias_voltage_str.split(" ")]
                 bias_voltage_array = np.array(bias_voltage_array)
             else:
                 bias_voltage_array = np.zeros((8,)) # hard-coded number of bias groups
@@ -288,7 +287,8 @@ if __name__ == "__main__":
             tes_bias=19.9 # factor of 10ish from above
 
         if args.bias_group < 0:
-            S.overbias_tes_all(overbias_wait=args.overbias_tes_wait, bias_groups=S.all_groups, 
+            S.overbias_tes_all(overbias_wait=args.overbias_tes_wait, 
+                bias_groups=S.all_groups, 
                 high_current_mode=S.high_current_mode_bool, tes_bias=tes_bias)
         else:
             S.overbias_tes(args.bias_group, overbias_wait=args.overbias_tes_wait, 
@@ -339,7 +339,8 @@ if __name__ == "__main__":
         S.log('plc bias low {}'.format(S.get_tes_bias_bipolar_array()))
         S.log('plc bias step {}'.format(args.iv_bias_step))
 
-        iv_bias_step = np.abs(args.iv_bias_step) * 1.5 # speed this up relative to other mce's
+        # speed this up relative to other mce's
+        iv_bias_step = np.abs(args.iv_bias_step) * 1.5 
 
         S.log('running plc on all bias groups')
         S.partial_load_curve_all(bias_high, bias_step=iv_bias_step, 

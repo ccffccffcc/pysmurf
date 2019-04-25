@@ -14,6 +14,13 @@ class SmurfConfig:
     """
 
     def __init__(self, filename=None):
+        """
+        Initialize for SmurfConfig
+
+        Opt Args:
+        ---------
+        filename (str) : The filename to read/write
+        """
         self.filename = filename
         # self.config = [] # do I need to initialize this? I don't think so
         if self.filename is not None:
