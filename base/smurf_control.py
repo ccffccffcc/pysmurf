@@ -17,9 +17,8 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
     '''
     def __init__(self, epics_root=None, 
         cfg_file='/home/cryo/pysmurf/cfg_files/experiment_k2umux.cfg', 
-        data_dir=None, name=None, make_logfile=True, 
-        setup=False, offline=False, smurf_cmd_mode=False, no_dir=False,
-        **kwargs):
+        data_dir=None, name=None, make_logfile=True, setup=False, offline=False, 
+        smurf_cmd_mode=False, no_dir=False, **kwargs):
         '''
         Intializer for SmurfControl.
 
@@ -48,6 +47,7 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
                 setup=setup, smurf_cmd_mode=smurf_cmd_mode, 
                 no_dir=no_dir, **kwargs)
 
+
     def initialize(self, cfg_file, data_dir=None, name=None, 
         make_logfile=True, setup=False, smurf_cmd_mode=False, 
         no_dir=False, **kwargs):
@@ -71,7 +71,7 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
             many things.
         setup (bool) : Whether to run setup. Default False.
         '''
-
+        # Skip making output directories
         if no_dir:
             print('Warning! Not making output directories!'+ \
                 'This will break may things!')
@@ -93,7 +93,8 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
 
             # Set logfile
             datestr = time.strftime('%y%m%d_', time.gmtime())
-            self.log_file = os.path.join(self.output_dir, 'logs', datestr + 'smurf_cmd.log')
+            self.log_file = os.path.join(self.output_dir, 'logs', datestr + 
+                'smurf_cmd.log')
             self.log.set_logfile(self.log_file)
         else:
             # define data dir
@@ -118,6 +119,8 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
             self.tune_dir = self.config.get('tune_dir')
             self.plot_dir = os.path.join(self.base_dir, self.date, name, 'plots')
             self.status_dir = self.config.get('status_dir')
+
+            # Make all the directories if they do not exist
             self.make_dir(self.output_dir)
             self.make_dir(self.tune_dir)
             self.make_dir(self.plot_dir)
@@ -168,9 +171,10 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         # Flux ramp hardware detail
         flux_ramp_cfg = self.config.get('flux_ramp')
         keys = flux_ramp_cfg.keys()
-        self.num_flux_ramp_counter_bits=20
+        self.num_flux_ramp_counter_bits = 20
         if 'num_flux_ramp_counter_bits' in keys:
-            self.num_flux_ramp_counter_bits=flux_ramp_cfg['num_flux_ramp_counter_bits']
+            self.num_flux_ramp_counter_bits = \
+                flux_ramp_cfg['num_flux_ramp_counter_bits']
 
         # Mapping from chip number to frequency in GHz
         chip_cfg = self.config.get('chip_to_freq')
@@ -252,7 +256,8 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         # Dictionary for frequency response
         self.freq_resp = {}
         self.lms_freq_hz = {}
-        self.fraction_full_scale = self.config.get('tune_band').get('fraction_full_scale')
+        self.fraction_full_scale = \
+            self.config.get('tune_band').get('fraction_full_scale')
         smurf_init_config = self.config.get('init')
         bands = smurf_init_config['bands']
         for b in bands:
@@ -264,12 +269,14 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         # Load in tuning parameters, if present
         tune_band_cfg=self.config.get('tune_band')
         tune_band_keys=tune_band_cfg.keys()
-        for cfg_var in ['gradient_descent_gain', 'gradient_descent_averages', 'eta_scan_averages']:
+        for cfg_var in ['gradient_descent_gain', 'gradient_descent_averages', 
+            'eta_scan_averages']:
             if cfg_var in tune_band_keys:
                 setattr(self, cfg_var, {})
                 for b in  bands:
                     getattr(self,cfg_var)[b]=tune_band_cfg[cfg_var][str(b)]
 
+        # Set all the default values
         if setup:
             self.setup(**kwargs)
 
@@ -345,8 +352,8 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
                 write_log=write_log, **kwargs)
 
             for dmx in np.array(smurf_init_config[band_str]["data_out_mux"]):
-                self.set_data_out_mux(int(self.band_to_bay(b)), int(dmx), "UserData", write_log=write_log,
-                    **kwargs)
+                self.set_data_out_mux(int(self.band_to_bay(b)), int(dmx), 
+                    "UserData", write_log=write_log, **kwargs)
 
             self.set_att_uc(b, smurf_init_config[band_str]['att_uc'],
                 write_log=write_log)
@@ -357,26 +364,37 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
                 write_log=write_log, **kwargs)
 
             # Tuning defaults - only set if present in cfg
-            if hasattr(self,'gradient_descent_gain') and b in self.gradient_descent_gain.keys():
-                self.set_gradient_descent_gain(b, self.gradient_descent_gain[b], write_log=write_log, **kwargs)
-            if hasattr(self,'gradient_descent_averages') and b in self.gradient_descent_averages.keys():
-                self.set_gradient_descent_averages(b, self.gradient_descent_averages[b], write_log=write_log, **kwargs)
-            if hasattr(self,'eta_scan_averages') and b in self.eta_scan_averages.keys():
-                self.set_eta_scan_averages(b, self.eta_scan_averages[b], write_log=write_log, **kwargs)
+            if hasattr(self,'gradient_descent_gain') and b in \
+                self.gradient_descent_gain.keys():
+                self.set_gradient_descent_gain(b, self.gradient_descent_gain[b], 
+                    write_log=write_log, **kwargs)
+            if hasattr(self,'gradient_descent_averages') and b in \
+                self.gradient_descent_averages.keys():
+                self.set_gradient_descent_averages(b, 
+                    self.gradient_descent_averages[b], write_log=write_log, 
+                    **kwargs)
+            if hasattr(self,'eta_scan_averages') and b in \
+                self.eta_scan_averages.keys():
+                self.set_eta_scan_averages(b, self.eta_scan_averages[b], 
+                    write_log=write_log, **kwargs)
 
-        self.set_trigger_width(0, 10, write_log=write_log)  # mystery bit that makes triggering work
+        # mystery bit that makes triggering work
+        self.set_trigger_width(0, 10, write_log=write_log)  
         self.set_trigger_enable(0, 1, write_log=write_log)
         self.set_evr_channel_reg_enable(0, True, write_log=write_log)
         self.set_evr_trigger_reg_enable(0, True, write_log=write_log)
-        self.set_evr_trigger_channel_reg_dest_sel(0, 0x20000, write_log=write_log)
+        self.set_evr_trigger_channel_reg_dest_sel(0, 0x20000, 
+            write_log=write_log)
 
         self.set_enable_ramp_trigger(1, write_log=True)
 
+        # Flux ramp values
         flux_ramp_cfg = self.config.get('flux_ramp')
         self.set_select_ramp(flux_ramp_cfg['select_ramp'], write_log=write_log)
         self.set_ramp_start_mode(flux_ramp_cfg['ramp_start_mode'], 
                                  write_log=write_log)
 
+        # Toggle helps the flux ramp actually work
         self.set_cpld_reset(0, write_log=write_log)
         self.cpld_toggle(write_log=write_log)
 
@@ -397,12 +415,16 @@ class SmurfControl(SmurfCommandMixin, SmurfUtilMixin, SmurfTuneMixin,
         for b in bands:
             self.set_stream_enable(b, 1, write_log=write_log)
 
+        # Toggle the smurf to gcp bits to make sure the filters are cleared
         self.set_smurf_to_gcp_clear(1, write_log=write_log, wait_after=1)
         self.set_smurf_to_gcp_clear(0, write_log=write_log)
 
+        # Powers up amplifiers
         self.set_amplifier_bias(write_log=write_log)
         _ = self.get_amplifier_bias()
-        self.log("Cryocard temperature = "+ str(self.C.read_temperature())) # also read the temperature of the CC
+
+        # also read the temperature of the CC
+        self.log("Cryocard temperature = "+ str(self.C.read_temperature())) 
 
         self.log('Done with setup')
         for bay in self.bays:
