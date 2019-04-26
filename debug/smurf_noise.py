@@ -5,6 +5,8 @@ from pysmurf.base import SmurfBase
 import os
 import time
 from pysmurf.util import tools
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 class SmurfNoiseMixin(SmurfBase):
 
@@ -64,7 +66,6 @@ class SmurfNoiseMixin(SmurfBase):
         self.log('Plotting channels {}'.format(channel), self.LOG_USER)
 
         if make_summary_plot or make_channel_plot:
-            import matplotlib.pyplot as plt
             plt.rcParams["patch.force_edgecolor"] = True
 
         noise_floors = np.full((len(low_freq), n_channel),np.nan)
@@ -550,9 +551,6 @@ class SmurfNoiseMixin(SmurfBase):
             for summary plot of noise vs. bias; if None, then plot white-noise 
             level from model fit
         """
-        import matplotlib.pyplot as plt
-        from matplotlib.gridspec import GridSpec
-
         if not show_plot:
             plt.ioff()
 
@@ -1075,8 +1073,6 @@ class SmurfNoiseMixin(SmurfBase):
         if fs is None:
             fs = self.fs
 
-        import matplotlib.pyplot as plt
-
         keys = ret.keys()
         all_dir = ret.pop('all')
 
@@ -1151,9 +1147,6 @@ class SmurfNoiseMixin(SmurfBase):
         """
         Analysis script associated with noise_vs_tone.
         """
-        import matplotlib.pyplot as plt
-        from matplotlib.gridspec import GridSpec
-
         if not show_plot:
             plt.ioff()
 
