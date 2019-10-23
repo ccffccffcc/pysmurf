@@ -1731,7 +1731,10 @@ class SmurfCommandMixin(SmurfBase):
     _uc = 'UC[{}]'
     def set_att_uc(self, b, val, **kwargs):
         '''
-        Set the upconverter attenuator
+        Set the upconverter attenuator. Each band has its own
+        upconverter attenuator. The band to attenuator relation is
+        defined in self.att_to_band, which is itself defined in
+        the config file. Each unit here is 0.5 dB attenuation. 
 
         Args:
         -----
@@ -1740,11 +1743,15 @@ class SmurfCommandMixin(SmurfBase):
         '''
         att = self.band_to_att(b)
         bay = self.band_to_bay(b)
-        self._caput(self.att_root.format(bay) + self._uc.format(int(att)), val, **kwargs)
+        self._caput(self.att_root.format(bay) +
+                    self._uc.format(int(att)), val, **kwargs)
 
     def get_att_uc(self, b, **kwargs):
         '''
-        Get the upconverter attenuator value
+        Get the upconverter attenuator value. Each band has its own
+        upconverter attenuator. The band to attenuator relation is
+        defined in self.att_to_band, which is itself defined in
+        the config file. Each unit here is 0.5 dB attenuation. 
 
         Args:
         -----
@@ -1752,13 +1759,17 @@ class SmurfCommandMixin(SmurfBase):
         '''
         att = self.band_to_att(b)
         bay = self.band_to_bay(b)
-        return self._caget(self.att_root.format(bay) + self._uc.format(int(att)), **kwargs)
+        return self._caget(self.att_root.format(bay) +
+                           self._uc.format(int(att)), **kwargs)
 
 
     _dc = 'DC[{}]'
     def set_att_dc(self, b, val, **kwargs):
         '''
-        Set the down-converter attenuator
+        Set the down-converter attenuator. Each band has its own
+        downconverter attenuator. The band to attenuator relation is
+        defined in self.att_to_band, which is itself defined in
+        the config file. Each unit here is 0.5 dB attenuation. 
 
         Args:
         -----
@@ -1767,11 +1778,15 @@ class SmurfCommandMixin(SmurfBase):
         '''
         att = self.band_to_att(b)
         bay = self.band_to_bay(b)
-        self._caput(self.att_root.format(bay) + self._dc.format(int(att)), val, **kwargs)
+        self._caput(self.att_root.format(bay) +
+                    self._dc.format(int(att)), val, **kwargs)
 
     def get_att_dc(self, b, **kwargs):
         '''
-        Get the down-converter attenuator value
+        Get the down-converter attenuator value. Each band has its own
+        downconverter attenuator. The band to attenuator relation is
+        defined in self.att_to_band, which is itself defined in
+        the config file. Each unit here is 0.5 dB attenuation. 
 
         Args:
         -----
@@ -1779,7 +1794,8 @@ class SmurfCommandMixin(SmurfBase):
         '''
         att = self.band_to_att(b)
         bay = self.band_to_bay(b)
-        return self._caget(self.att_root.format(bay) + self._dc.format(int(att)), **kwargs)
+        return self._caget(self.att_root.format(bay) +
+                           self._dc.format(int(att)), **kwargs)
 
     # ADC commands
     _adc_remap = "Remap[0]"  # Why is this hardcoded 0
