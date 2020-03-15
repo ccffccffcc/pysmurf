@@ -20,9 +20,11 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import matplotlib.colors as Colors
+from pysmurf.client.util.pub import set_action
 
 class SmurfIVMixin(SmurfBase):
 
+    @set_action()
     def slow_iv_all(self, bias_groups=None, wait_time=.1, bias=None,
                     bias_high=1.5, bias_low=0, bias_step=.005,
                     show_plot=False, overbias_wait=2., cool_wait=30,
@@ -133,7 +135,7 @@ class SmurfIVMixin(SmurfBase):
             plotname_append=plotname_append, R_sh=R_sh, grid_on=grid_on,
             phase_excursion_min=phase_excursion_min,chs=channels,band=band)
 
-
+    @set_action()
     def partial_load_curve_all(self, bias_high_array, bias_low_array=None,
             wait_time=0.1, bias_step=0.1, show_plot=False, analyze=True,
             make_plot=True, save_plot=True, channels=None, overbias_voltage=None,
@@ -250,7 +252,7 @@ class SmurfIVMixin(SmurfBase):
                 high_current_mode=self.high_current_mode_bool,
                 phase_excursion_min=phase_excursion_min, channels=channels)
 
-
+    @set_action()
     def analyze_slow_iv_from_file(self, fn_iv_raw_data, make_plot=True,
                                   show_plot=False, save_plot=True,
                                   plotname_append='', R_sh=None,
@@ -504,7 +506,7 @@ class SmurfIVMixin(SmurfBase):
             if not show_plot:
                 plt.close()
 
-
+    @set_action()
     def analyze_slow_iv(self, v_bias, resp, make_plot=True, show_plot=False,
             save_plot=True, basename=None, band=None, channel=None, R_sh=None,
             plot_dir=None, high_current_mode=False, bias_group=None,
@@ -857,6 +859,7 @@ class SmurfIVMixin(SmurfBase):
 
         return iv_dict
 
+    @set_action()
     def analyze_plc_from_file(self, fn_plc_raw_data, make_plot=True, show_plot=False,
             save_plot=True, R_sh=None, high_current_mode=None, phase_excursion_min=1.,
             channels=None):
@@ -946,6 +949,7 @@ class SmurfIVMixin(SmurfBase):
                 if not show_plot:
                     plt.close()
 
+    @set_action()
     def estimate_opt_eff(self, iv_fn_hot, iv_fn_cold,t_hot=293.,t_cold=77.,
             channels = None, dPdT_lim=(0.,0.5)):
         """
@@ -1058,7 +1062,7 @@ class SmurfIVMixin(SmurfBase):
         self.pub.register_file(hist_filename, 'opt_efficiency', plot=True)
         plt.close()
 
-
+    @set_action()
     def estimate_bias_voltage(self, iv_file, target_r_frac=.5,
                               normal_resistance=None,
                               normal_resistance_frac=.25,
